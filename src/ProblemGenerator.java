@@ -33,7 +33,7 @@ ProblemGenerator(Desc desc) throws FileNotFoundException {
         cout.println();
         int treeCount = rand(1, desc.MAX_TREE);
         int colorCount = rand(1, desc.MAX_COLOR);
-        int forestCount = rand(1, desc.MAX_TREE);
+        int forestCount = rand(1, treeCount + 1);
         cout.printf("%d %d %d\n", treeCount, colorCount, forestCount);
         for (int i = 0; i < treeCount; i++) {
             for (int j = 0; j < colorCount; j++) {

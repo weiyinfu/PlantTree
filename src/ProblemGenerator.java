@@ -4,10 +4,10 @@ import java.util.Random;
 
 public class ProblemGenerator {
 static class Desc {
-    int MAX_TREE = 5;
-    int MAX_COLOR = 3;
-    int MAX_COST = 10;
-    int CASE_COUNT = 100;
+    int MAX_TREE;
+    int MAX_COLOR;
+    int MAX_COST;
+    int CASE_COUNT;
 
     Desc(int maxTree, int maxColor, int maxCost, int caseCount) {
         this.MAX_COLOR = maxColor;
@@ -18,7 +18,7 @@ static class Desc {
 }
 
 final static Desc production = new Desc(100, 10, 50, 100);
-final static Desc development = new Desc(5, 3, 10, 5);
+final static Desc development = new Desc(5, 5, 10, 5);
 Random r = new Random();
 
 int rand(int beg, int end) {

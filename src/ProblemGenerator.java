@@ -18,7 +18,7 @@ static class Desc {
 }
 
 final static Desc production = new Desc(100, 10, 50, 100);
-final static Desc development = new Desc(5, 5, 10, 5);
+final static Desc development = new Desc(5, 5, 10, 15);
 Random r = new Random();
 
 int rand(int beg, int end) {
@@ -46,7 +46,7 @@ ProblemGenerator(Desc desc) throws FileNotFoundException {
 }
 
 public static void main(String[] args) throws FileNotFoundException {
-//    new ProblemGenerator(ProblemGenerator.production);
-    new ProblemGenerator(ProblemGenerator.development);
+    new ProblemGenerator(ProblemGenerator.production);
+//    new ProblemGenerator(ProblemGenerator.development);
 }
 }

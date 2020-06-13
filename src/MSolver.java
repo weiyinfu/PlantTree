@@ -27,9 +27,14 @@ MSolver() throws FileNotFoundException {
         }
         //f[i][j][k]表示树的最少种类数
         long[][][] f = new long[treeCount + 1][colorCount][forestCount + 1];
-        for (int i = 1; i < f.length; i++)
+        for (int i = 0; i < f.length; i++)
             for (int j = 0; j < f[i].length; j++)
-                for (int k = 0; k < f[i][j].length; k++) f[i][j][k] = big;
+                for (int k = 0; k < f[i][j].length; k++) {
+                    f[i][j][k] = big;
+                    if (i == 0 && k == 0) {
+                        f[i][j][k] = 0;
+                    }
+                }
         for (int i = 0; i < treeCount; i++) {
             for (int j = 0; j < colorCount; j++) {//上一棵树的颜色
                 for (int plant = 0; plant < colorCount; plant++) {
@@ -47,6 +52,13 @@ MSolver() throws FileNotFoundException {
                 }
             }
         }
+//        for (int i = 0; i < f.length; i++) {
+//            for (int j = 0; j < f[i].length; j++) {
+//                for (int k = 0; k < f[i][j].length; k++) {
+//                    System.out.printf("第%d棵树种%d颜色形成%d个森林，花费为%d\n", i, j, k, f[i][j][k]);
+//                }
+//            }
+//        }
         long ans = big;
         for (int lastColor = 0; lastColor < colorCount; lastColor++) {
             ans = Math.min(ans, f[treeCount][lastColor][forestCount]);

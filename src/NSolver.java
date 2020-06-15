@@ -27,7 +27,9 @@ NSolver() throws FileNotFoundException {
         }
         if (colorCount == 0 && treeCount > 0
                 || treeCount > 0 && forestCount == 0
-                || colorCount <= 1 && forestCount > 1) {
+                || colorCount <= 1 && forestCount > 1
+                || forestCount > treeCount
+        ) {
             System.out.println(-1);
             continue;
         }
@@ -43,43 +45,55 @@ NSolver() throws FileNotFoundException {
                 co[i][j] += co[i][j - 1] + cost[j - 1][i];
             }
         }
-//        show(co, "cost 数组");
-        //f[i][j][k]表示树的最少种类数
-        long[][][] f = new long[colorCount][treeCount + 1][forestCount + 1];
-        for (int plant = 0; plant <= treeCount; plant++) {
-            //第一棵树的森林数不可能太多
-            for (int j = 0; j <= forestCount; j++) {
-                if (plant == 0 && j == 0) {
-                    continue;
-                }
-                if (plant > 0 && plant <= ma && j == 1) {
-                    f[0][plant][j] = co[0][plant];
-                } else {
-                    f[0][plant][j] = big;
-                }
-            }
-        }
-        for (int i = 1; i < colorCount; i++) {
+        int maxUsed = Math.min(forestCount, colorCount) + 1;
+        //f[i][j][k]表示使用前i种颜色种了j棵树，真正用到的树的个数为k
+        long[][][] f = new long[colorCount][treeCount + 1][maxUsed];
+        for (int i = 0; i < colorCount; i++) {
             for (int j = 0; j <= treeCount; j++) {
-                for (int l = 0; l <= forestCount; l++) {
-                    f[i][j][l] = big;
-                    //当前可以植树的总数
-                    for (int p = 0; p <= Math.min(ma, j); p++) {
-                        //当前准备种p棵树
-                        if (p > 0 && l == 0) continue;
-                        int lastKind = l - 1;
-                        if (p == 0) {
-                            lastKind = l;
+                for (int l = 0; l < maxUsed; l++) {
+                    if (i == 0) {
+                        if (j > 0) {
+                            //如果种
+                            if (l == 1) {
+                                f[0][j][1] = j <= ma ? co[i][j] : big;
+                            } else {
+                                f[0][j][l] = big;
+                            }
+                        } else {
+                            if (l > 0)
+                                f[0][0][l] = big;
+                            else
+                                f[0][0][l] = 0;
                         }
-                        long now = f[i - 1][j - p][lastKind] + co[i][p];
-                        f[i][j][l] = Math.min(f[i][j][l], now);
+                    } else {
+                        f[i][j][l] = big;
+                        for (int p = 0; p <= ma; p++) {
+                            //此次准备种树的个数
+                            long now;
+                            if (p > 0) {
+                                //如果此次种树
+                                if (l == 0) {
+                                    now = big;
+                                } else {
+                                    if (j >= p) {
+                                        now = f[i - 1][j - p][l - 1] + co[i][p];
+                                    } else {
+                                        now = big;
+                                    }
+                                }
+                            } else {
+                                //如果此次不种树
+                                now = f[i - 1][j][l];
+                            }
+                            f[i][j][l] = Math.min(f[i][j][l], now);
+                        }
                     }
                 }
             }
         }
         long ans = big;
-        for (int i = 0; i <= forestCount; i++) {
-            long now = f[colorCount - 1][treeCount][i];
+        for (int usedCount = 0; usedCount < maxUsed; usedCount++) {
+            long now = f[colorCount - 1][treeCount][usedCount];
             ans = Math.min(ans, now);
         }
         if (ans == big) {
@@ -87,17 +101,6 @@ NSolver() throws FileNotFoundException {
         }
         System.out.println(ans);
     }
-}
-
-private void show(long[][] co, String desc) {
-    System.out.println(desc);
-    for (int i = 0; i < co.length; i++) {
-        for (int j = 0; j < co[i].length; j++) {
-            System.out.printf("%d ", co[i][j]);
-        }
-        System.out.println();
-    }
-    System.out.println("================");
 }
 
 public static void main(String[] args) throws FileNotFoundException {

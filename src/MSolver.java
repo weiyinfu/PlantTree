@@ -25,43 +25,39 @@ MSolver() throws FileNotFoundException {
             System.out.println(0);
             continue;
         }
-        //f[i][j][k]表示树的最少种类数
-        long[][][] f = new long[treeCount + 1][colorCount][forestCount + 1];
+        //f[i][j][k]表示种了i棵树最后一棵树是j森林树是k
+        long[][][] f = new long[treeCount][colorCount][forestCount];
         for (int i = 0; i < f.length; i++)
             for (int j = 0; j < f[i].length; j++)
                 for (int k = 0; k < f[i][j].length; k++) {
-                    f[i][j][k] = big;
-                    if (i == 0 && k == 0) {
-                        f[i][j][k] = 0;
-                    }
-                }
-        for (int i = 0; i < treeCount; i++) {
-            for (int j = 0; j < colorCount; j++) {//上一棵树的颜色
-                for (int plant = 0; plant < colorCount; plant++) {
-                    //当前准备种的树的颜色
-                    for (int forest = 0; forest <= forestCount; forest++) {
-                        //过去已经形成的森林树
-                        long co = f[i][j][forest] + cost[i][plant];
-                        if (plant == j && i > 0) {
-                            f[i + 1][plant][forest] = Math.min(co, f[i + 1][plant][forest]);
+                    if (i == 0) {
+                        if (k == 0) {
+                            f[i][j][0] = cost[0][j];
                         } else {
-                            if (forest == forestCount) continue;
-                            f[i + 1][plant][forest + 1] = Math.min(co, f[i + 1][plant][forest + 1]);
+                            f[i][j][k] = big;
                         }
+                    } else {
+                        long ans = big;
+                        for (int p = 0; p < colorCount; p++) {
+                            //上次种树的颜色
+                            long now;
+                            if (p == j) {
+                                now = f[i - 1][p][k];
+                            } else {
+                                if (k == 0) {
+                                    now = big;
+                                } else {
+                                    now = f[i - 1][p][k - 1];
+                                }
+                            }
+                            ans = Math.min(ans, now + cost[i][j]);
+                        }
+                        f[i][j][k] = ans;
                     }
                 }
-            }
-        }
-//        for (int i = 0; i < f.length; i++) {
-//            for (int j = 0; j < f[i].length; j++) {
-//                for (int k = 0; k < f[i][j].length; k++) {
-//                    System.out.printf("第%d棵树种%d颜色形成%d个森林，花费为%d\n", i, j, k, f[i][j][k]);
-//                }
-//            }
-//        }
         long ans = big;
         for (int lastColor = 0; lastColor < colorCount; lastColor++) {
-            ans = Math.min(ans, f[treeCount][lastColor][forestCount]);
+            ans = Math.min(ans, f[treeCount - 1][lastColor][forestCount - 1]);
         }
         if (ans == big) {
             ans = -1;
